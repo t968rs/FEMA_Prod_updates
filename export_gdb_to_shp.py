@@ -135,7 +135,8 @@ class ExportShapefiles:
         arcpy.env.transferDomains = True
         for inpath, outpath in self.fc_dict.items():
             name = os.path.split(inpath)[1]
-            arcpy.conversion.FeatureClassToShapefile(inpath, self.output_folder)
+            arcpy.conversion.FeatureClassToFeatureClass(inpath, self.output_folder, name)
+            arcpy.AddSpatialIndex_management(outpath)
             arcpy.management.RepairGeometry(outpath, validation_method='OGC')
             arcpy.AddMessage(f'  {name}\n   exported to  {self.output_folder}\n')
             exported.append(name)
@@ -163,7 +164,7 @@ class ExportShapefiles:
             domain_dict[fc_path] = {'Del Field List': fields_todelete, 'Field Pairs': field_pairs}
 
             field_list = [f.name for f in arcpy.ListFields(fc)]
-            arcpy.AddMessage(f'{fc}: {field_list}')
+            # arcpy.AddMessage(f'{fc}: {field_list}')
             for fname in field_list:
 
                 if fname.startswith('d_'):
@@ -173,7 +174,7 @@ class ExportShapefiles:
                         if fema_field.startswith(domain_postfix):
                             field_pairs.append((fema_field, fname))
                             fields_todelete.append(fname)
-            arcpy.AddMessage(f'{fc} has {len(fields_todelete)} domain fields to delete...')
+            # arcpy.AddMessage(f'{fc} has {len(fields_todelete)} domain fields to delete...')
 
             # Add field pairs and fields to delete to dictionary
             domain_dict[fc_path]['Del Field List'] = fields_todelete
@@ -186,8 +187,10 @@ class ExportShapefiles:
         # Update fields with domain descriptions found earlier
         for shp_path, dictionary in self.domain_fields.items():
             shp_name = os.path.split(shp_path)[1]
-            arcpy.AddMessage(f'  Populating domain-sourced fields for {shp_name}')
+
             field_pair_list = dictionary['Field Pairs']
+            if len(field_pair_list) > 0:
+                arcpy.AddMessage(f'  Populating domain-sourced fields for {shp_name}')
             for pair in field_pair_list:
                 target_field = pair[0]
                 source_field = pair[1]
@@ -215,7 +218,7 @@ class ExportShapefiles:
                         arcpy.management.DeleteField(shp_path, [field])
                         del_count += 1
                     if del_count >= len(f_del_list):
-                        arcpy.AddMessage(f' Successfully deleted all "d_" fields from {shp_name}')
+                        arcpy.AddMessage(f' Individually deleted all "d_" fields from {shp_name}')
 
     def run_all(self):
         """Run all required methods"""
@@ -230,23 +233,23 @@ class ExportShapefiles:
         times_recorded['Found GDB files'] = time.time()
 
         self.export_files()
-        times_recorded['Exported all files'] = time.time()
-        timer.time_reporter(times=times_recorded, new_iter=True, class_name=__name__)
+        times_recorded[f'Exported {len(self.exported)} files'] = time.time()
+        timer.time_reporter(times=times_recorded, new_iter=True, class_name='ExportShapefiles')
 
         # self.remove_fmd_compliance()
         self.remove_extra_files()
         self.drop_fields()
         times_recorded['Dropped extra fields and files'] = time.time()
-        timer.time_reporter(times=times_recorded, new_iter=False, class_name=__name__)
+        timer.time_reporter(times=times_recorded, new_iter=False, class_name='ExportShapefiles')
 
         self.populate_domain_fields()
         self.update_domain_fields()
         times_recorded['Populated fields with domain descriptions'] = time.time()
-        timer.time_reporter(times=times_recorded, new_iter=False, class_name=__name__)
+        timer.time_reporter(times=times_recorded, new_iter=False, class_name='ExportShapefiles')
 
         self.delete_domain_description_fields()
         times_recorded['Deleted "d_" fields'] = time.time()
-        timer.time_reporter(times=times_recorded, new_iter=False, class_name=__name__)
+        timer.time_reporter(times=times_recorded, new_iter=False, class_name='ExportShapefiles')
 
 
 class TimeReports:
@@ -255,6 +258,7 @@ class TimeReports:
 
         self.times_dictionary = None
         self.start_time = None
+        self.printed = []
 
         self.workspace = workspace
         self.options = options
@@ -295,18 +299,20 @@ class TimeReports:
         self.times_dictionary = self.times_dictionary.update(times)
 
         for timename in timenames:
-            total_seconds = times[timename]
-            elapsed = total_seconds - self.start_time
-            hours = elapsed // 3600
-            elapsed = elapsed - 3600 * hours
-            minutes = elapsed // 60
-            elapsed = elapsed - 60 * minutes
-            seconds = round(elapsed, 2)
-            elapsed_times[timename] = (hours, minutes, seconds)
-            print(f"{timename} processing finished after: {hours} hours, {minutes} minutes, {seconds} seconds")
-            time_printout = open(time_results, "a")
-            time_printout.writelines(f"\n{timename}: \n{hours} hours, {minutes} minutes, {seconds} seconds\n")
-            time_printout.close()
+            if timename not in self.printed:
+                total_seconds = times[timename]
+                elapsed = total_seconds - self.start_time
+                hours = elapsed // 3600
+                elapsed = elapsed - 3600 * hours
+                minutes = elapsed // 60
+                elapsed = elapsed - 60 * minutes
+                seconds = round(elapsed, 2)
+                elapsed_times[timename] = (hours, minutes, seconds)
+                print(f"{timename} processing finished after: {hours} hours, {minutes} minutes, {seconds} seconds")
+                time_printout = open(time_results, "a")
+                time_printout.writelines(f"\n{timename}: \n{hours} hours, {minutes} minutes, {seconds} seconds\n")
+                time_printout.close()
+                self.printed.append(timename)
 
 
 if __name__ == "__main__":
