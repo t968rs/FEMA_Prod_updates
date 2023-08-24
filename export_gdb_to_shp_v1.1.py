@@ -296,12 +296,6 @@ class ExportShapefiles:
         times_recorded[f'Exported {len(self.exported)} files'] = time.time()
         timer.time_reporter(times=times_recorded, new_iter=True, class_name='ExportShapefiles')
 
-        # self.remove_fmd_compliance()
-        self.remove_extra_files()
-        self.drop_fields()
-        times_recorded['Dropped extra fields and files'] = time.time()
-        timer.time_reporter(times=times_recorded, new_iter=False, class_name='ExportShapefiles')
-
         self.populate_domain_fields()
         self.create_temp_field()
         self.update_domain_fields()
@@ -310,6 +304,12 @@ class ExportShapefiles:
 
         self.delete_domain_description_fields()
         times_recorded['Deleted "d_" fields'] = time.time()
+        timer.time_reporter(times=times_recorded, new_iter=False, class_name='ExportShapefiles')
+
+        # self.remove_fmd_compliance()
+        self.remove_extra_files()
+        self.drop_fields()
+        times_recorded['Dropped extra fields and files'] = time.time()
         timer.time_reporter(times=times_recorded, new_iter=False, class_name='ExportShapefiles')
 
 

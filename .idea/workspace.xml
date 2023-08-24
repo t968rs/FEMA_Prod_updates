@@ -1,20 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="24bf2722-176d-4e6d-9e2a-fbdd714cc9f7" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/database_shp_qc/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database_shp_qc/.idea/database_shp_qc.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database_shp_qc/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database_shp_qc/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database_shp_qc/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database_shp_qc/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database_shp_qc/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database_shp_qc/database_shp_qc_EXECUTION.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/FEMA_Prod_updates_01.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/FEMA_Prod_updates_01.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/export_gdb_to_shp.py" beforeDir="false" />
+    <list default="true" id="24bf2722-176d-4e6d-9e2a-fbdd714cc9f7" name="Changes" comment="FEMA_Prod_updates 01">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/export_gdb_to_shp_v1.1.py" beforeDir="false" afterPath="$PROJECT_DIR$/export_gdb_to_shp_v1.1.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -49,6 +40,25 @@
       <option name="presentableId" value="Default" />
       <updated>1692836515363</updated>
     </task>
+    <task id="LOCAL-00001" summary="FEMA_Prod_updates 01">
+      <created>1692839278316</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1692839278316</updated>
+    </task>
+    <task id="LOCAL-00002" summary="FEMA_Prod_updates 01">
+      <created>1692839288441</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1692839288441</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="FEMA_Prod_updates 01" />
+    <option name="LAST_COMMIT_MESSAGE" value="FEMA_Prod_updates 01" />
   </component>
 </project>
