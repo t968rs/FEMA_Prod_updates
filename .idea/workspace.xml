@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="24bf2722-176d-4e6d-9e2a-fbdd714cc9f7" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/database_shp_qc/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database_shp_qc/.idea/database_shp_qc.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database_shp_qc/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database_shp_qc/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database_shp_qc/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database_shp_qc/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database_shp_qc/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database_shp_qc/database_shp_qc_EXECUTION.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/FEMA_Prod_updates_01.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/FEMA_Prod_updates_01.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/export_gdb_to_shp.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/export_gdb_to_shp_v1.1.py" beforeDir="false" afterPath="$PROJECT_DIR$/export_gdb_to_shp_v1.1.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2UPLxanbGU9MyXMzsxyq1Y8c5Ja" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="24bf2722-176d-4e6d-9e2a-fbdd714cc9f7" name="Changes" comment="" />
+      <created>1692836515363</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1692836515363</updated>
+    </task>
+    <servers />
+  </component>
+</project>
