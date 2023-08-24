@@ -9,10 +9,17 @@ import time
 class ExportShapefiles:
     """Exports all the feature classes and tables within a workspace that contain data"""
 
-    def __init__(self, workspace, output_folder):
+    def __init__(self, workspace, output_folder, keep_temp):
         """Constructor"""
         self.workspace = workspace
         self.output_folder = output_folder
+
+        if type(keep_temp) is not bool:
+            if keep_temp in ['true', 'True']:
+                keep_temp = True
+            else:
+                keep_temp = False
+        self.keep_temp = keep_temp
 
         # Table and FC dictionaries
         self.fc_dict = {}
@@ -132,9 +139,9 @@ class ExportShapefiles:
 
         exported = []
 
-        arcpy.env.transferDomains = True
         for inpath, outpath in self.fc_dict.items():
             name = os.path.split(inpath)[1]
+            arcpy.env.transferDomains = True
             arcpy.conversion.FeatureClassToFeatureClass(inpath, self.output_folder, name)
             arcpy.AddSpatialIndex_management(outpath)
             arcpy.management.RepairGeometry(outpath, validation_method='OGC')
@@ -168,7 +175,7 @@ class ExportShapefiles:
             for fname in field_list:
 
                 if fname.startswith('d_'):
-                    arcpy.AddMessage(f'Found {fname}')
+                    arcpy.AddMessage(f' |{fc}|\n  - Found {fname}')
                     domain_postfix = fname.split('d_')[1]
                     for fema_field in field_list:
                         if fema_field.startswith(domain_postfix):
@@ -182,6 +189,38 @@ class ExportShapefiles:
 
         self.domain_fields = domain_dict
 
+    def create_temp_field(self):
+
+        for shp_path, dictionary in self.domain_fields.items():
+            shp_name = os.path.split(shp_path)[1]
+
+            field_pair_list = dictionary['Field Pairs']
+            field_pair_list_static = field_pair_list.copy()
+            if len(field_pair_list) > 0:
+                arcpy.AddMessage(f'  Populating {len(field_pair_list)} domain-sourced fields for {shp_name}')
+                arcpy.AddMessage(f'Field Pairs: {field_pair_list}')
+            for pair in field_pair_list_static:
+                target_field = pair[0]
+                source_field = pair[1]
+
+                # Create new field to hold original field values
+                new_field_name = target_field + "_t"
+                arcpy.management.AddField(shp_path, new_field_name, "Text", field_length='500')
+
+                # Update field "pairs" to include temp
+                old_pair = pair
+                add_pair = (new_field_name,)
+                # arcpy.AddMessage(f'Type of old_pair: {type(old_pair)}, Type of add_pair: {type(add_pair)}')
+                # arcpy.AddMessage(f'Old Pair: {old_pair}, New Pair: {add_pair}')
+                new_pair = old_pair + add_pair
+                field_pair_list.remove(pair)
+                field_pair_list.append(new_pair)
+
+                # Add delete field *if* not a mix of domains and values
+                if not self.keep_temp:
+                    del_fields = self.domain_fields[shp_path]['Del Field List']
+                    del_fields.append(new_field_name)
+
     def update_domain_fields(self):
 
         # Update fields with domain descriptions found earlier
@@ -189,15 +228,33 @@ class ExportShapefiles:
             shp_name = os.path.split(shp_path)[1]
 
             field_pair_list = dictionary['Field Pairs']
+            # arcpy.AddMessage(f'SHP: {shp_name}, Pairs: {field_pair_list}')
             if len(field_pair_list) > 0:
-                arcpy.AddMessage(f'  Populating domain-sourced fields for {shp_name}')
+                arcpy.AddMessage(f'  Populating {len(field_pair_list)} domain-sourced fields for {shp_name}')
             for pair in field_pair_list:
                 target_field = pair[0]
                 source_field = pair[1]
+                temp_field = pair[2]
 
-                with arcpy.da.UpdateCursor(shp_path, [target_field, source_field]) as u_cursor:
+                with arcpy.da.UpdateCursor(shp_path, [target_field, source_field, temp_field]) as u_cursor:
                     for urow in u_cursor:
-                        urow[0] = urow[1]
+                        urow[2] = urow[0]
+
+                        target = urow[0]
+                        source = urow[1]
+
+                        for x in target:
+                            if x.isdigit():
+                                if source is not None and source != '':
+                                    target = source
+                                    break
+                                break
+                        if len(source) > len(target):
+                            target = source
+                        elif target in [None, '', ' '] and source in [None, '', ' ']:
+                            target = 'NP'
+
+                        urow[0] = target
                         u_cursor.updateRow(urow)
                 del u_cursor
 
@@ -217,8 +274,11 @@ class ExportShapefiles:
                     for field in f_del_list:
                         arcpy.management.DeleteField(shp_path, [field])
                         del_count += 1
+                        f_del_list.remove(field)
                     if del_count >= len(f_del_list):
                         arcpy.AddMessage(f' Individually deleted all "d_" fields from {shp_name}')
+                    else:
+                        arcpy.AddMessage(f' Was not able to delete: {f_del_list} in {shp_name}')
 
     def run_all(self):
         """Run all required methods"""
@@ -243,6 +303,7 @@ class ExportShapefiles:
         timer.time_reporter(times=times_recorded, new_iter=False, class_name='ExportShapefiles')
 
         self.populate_domain_fields()
+        self.create_temp_field()
         self.update_domain_fields()
         times_recorded['Populated fields with domain descriptions'] = time.time()
         timer.time_reporter(times=times_recorded, new_iter=False, class_name='ExportShapefiles')
@@ -317,7 +378,7 @@ class TimeReports:
 
 if __name__ == "__main__":
     try:
-        export_shapefiles = ExportShapefiles(sys.argv[1], sys.argv[2])
+        export_shapefiles = ExportShapefiles(sys.argv[1], sys.argv[2], sys.argv[3])
         export_shapefiles.run_all()
 
     except arcpy.ExecuteError:
