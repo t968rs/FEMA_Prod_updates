@@ -4,6 +4,8 @@ import arcpy
 import sys
 import os
 import time
+import logging
+from static_tools import StaticTools
 
 
 class ExportShapefiles:
@@ -14,11 +16,6 @@ class ExportShapefiles:
         self.workspace = workspace
         self.output_folder = output_folder
 
-        if type(keep_temp) is not bool:
-            if keep_temp in ['true', 'True']:
-                keep_temp = True
-            else:
-                keep_temp = False
         self.keep_temp = keep_temp
 
         # Table and FC dictionaries
@@ -31,6 +28,30 @@ class ExportShapefiles:
 
         # Set the workspace
         arcpy.env.workspace = self.workspace
+
+    def format_input_values(self):
+
+        # T/F String --> Bool
+        for var_name in ['keep_temp']:
+            var_value = getattr(self, var_name)
+            if type(var_value) == str:
+                if var_value in ["#", 'false', '']:
+                    setattr(self, var_name, False)
+                else:
+                    setattr(self, var_name, True)
+
+        # Paths from inputs
+        for var_name in []:
+            var_value = getattr(self, var_name)
+            if var_value not in [None, '#', '']:
+                if not os.path.split(var_value)[0]:
+                    desc = arcpy.Describe(var_value)
+                    base_path, name = desc.path, desc.name
+                    new_path = os.path.join(base_path, name)
+                    setattr(self, var_name, new_path)
+                    arcpy.AddMessage(f'  Updated path for {var_value}:\n   {new_path}')
+            else:
+                setattr(self, var_name, None)
 
     def get_rootdir_get_runoptions(self):
 
@@ -111,11 +132,28 @@ class ExportShapefiles:
     def remove_extra_files(self):
         """Removes the cpg and xml files that ArcGIS creates"""
         # Delete cpg files
+        arcpy.AddMessage(f'Removing extra files')
+        StaticTools.setup_logging(function_name='remove_extra_files', output_folder=self.output_folder)
+        ef_logger = logging.getLogger('remove_extra_files')
+        ef_logger.info(f'\n\n -- NEW LOG --\n')
+        ef_logger.info(f'Looking in {self.output_folder}')
+
+        found_files = []
+        deleted = []
         for filename in os.listdir(str(self.output_folder)):
+            found_files.append(f'{os.path.split(filename)[1]}')
             if filename.endswith(".cpg"):
+                logging.info(f' Deleting {os.path.split(filename)[1]}')
+                deleted.append(os.path.split(filename)[1])
                 os.remove(str(self.output_folder) + "\\" + filename)
-            if filename[-8:] in [".dbf.xml", ".shp.xml"]:
-                os.remove(str(self.output_folder) + "\\" + filename)
+            for ext_str in [".dbf.xml", ".shp.xml"]:
+                if ext_str in filename:
+                    # arcpy.AddMessage(f' Deleting {filename}')
+                    logging.info(f' Deleting {os.path.split(filename)[1]}')
+                    os.remove(str(self.output_folder) + "\\" + filename)
+                    deleted.append(os.path.split(filename)[1])
+        logging.info(f'Found {len(found_files)}')
+        logging.info(f'Deleted {len(deleted)}:\n  {deleted}')
 
     def remove_fmd_compliance(self):
         """Removes the tables, feature classes and X_Scale from the export"""
